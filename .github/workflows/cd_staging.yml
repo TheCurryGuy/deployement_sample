@@ -21,8 +21,8 @@ jobs:
           # The -o StrictHostKeyChecking=no flag blindly trusts the server.
           # The user and host are hardcoded as requested.
           ssh -o StrictHostKeyChecking=no -i private_key ubuntu@65.1.100.197 << 'EOF'
-            set -e # Exit immediately if any command fails
-            source ~/.bashrc 
+            set -e 
+            source ~/.nvm/nvm.sh
 
             echo "--- Navigating to project directory ---"
             cd ~/deployement_sample/
