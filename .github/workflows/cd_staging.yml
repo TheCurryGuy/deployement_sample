@@ -1,15 +1,42 @@
-name: Deploy to staging
+
+name: Deploy to Staging
+
 on:
   push:
-    branches: 
-     - "main"
+    branches:
+      - "main"
 
 jobs:
-  redoply_everything:
+  redeploy_everything:
+    runs-on: ubuntu-latest
     name: Deploying everything to staging
     steps:
-     - name: SSH into Server
-       run: |
-        echo ${{secrets.SSH_PRIVATE_KEY}} > ~/ssh_key
-        chmod 700 ~/ssh_key
-        ssh -i ~/ssh_key ubuntu@13.233.115.45 "cd deployement_sample && git pull && pnpm install && pnpm run build && pm2 restart all"
+      - name: Deploy to Server with Hardcoded SSH Details
+        run: |
+          # Step 1: Create the SSH key file from the secret
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          chmod 600 private_key
+
+          # Step 2: Connect to the hardcoded server and execute the script.
+          # The -o StrictHostKeyChecking=no flag blindly trusts the server.
+          # The user and host are hardcoded as requested.
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@65.1.100.197 << 'EOF'
+            set -e # Exit immediately if any command fails
+
+            echo "--- Navigating to project directory ---"
+            cd ~/deployement_sample/
+
+            echo "--- Pulling latest changes ---"
+            git pull
+
+            echo "--- Installing dependencies ---"
+            pnpm install
+
+            echo "--- Building project ---"
+            pnpm run build
+
+            echo "--- Restarting PM2 processes ---"
+            pm2 restart all
+
+            echo "--- Deployment finished successfully! ---"
+          EOF
