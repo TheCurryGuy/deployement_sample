@@ -2,7 +2,7 @@ import express from "express"
 import {prisma} from "@repo/prisma/client"
 
 const app = express();
-app.use(express.json);
+app.use(express.json());
 
 app.get("/", (req, res)=>{
     return res.json({
@@ -26,5 +26,5 @@ app.post("/signup", async (req, res)=>{
 })
 
 app.listen(3002, ()=>{
-    console.log("Server running on 3000")
+    console.log("Server running on 3002")
 })
